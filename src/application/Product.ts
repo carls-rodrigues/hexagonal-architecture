@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 export default interface ProductInterface { 
   IsValid(): boolean | Error;
   Enable(): boolean | Error;
@@ -18,15 +20,32 @@ export class Product implements ProductInterface {
   price: number;
   status: string;
 
-  constructor(id: string, name: string, price: number, status: string) { 
-    this.id = id;
+  constructor(name: string, price: number, status: string) { 
+    this.id = randomUUID();
     this.name = name;
     this.price = price;
     this.status = status;
   }
 
   IsValid(): boolean | Error {
-    throw new Error("Method not implemented.");
+    const idValidator = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
+    if (this.status === "") {
+      this.status = STATUS.DISABLED;
+      return new Error('the status must be enabled or disabled');
+    }
+    if (this.status !== STATUS.ENABLED && this.status !== STATUS.DISABLED) { 
+      return new Error('the status must be enabled or disabled');
+    }
+    if (this.price < 0) { 
+      return new Error('the price must be greater than zero');
+    }
+    if (this.name === "" || this.name === undefined || this.name === null) {
+      return new Error('the name must be defined');
+    }
+    if (!idValidator.test(this.id)) { 
+      return new Error('the id must be a valid uuid');
+    }
+    return true;
   }
   Enable(): boolean | Error {
     if (this.price > 0) {
@@ -36,7 +55,11 @@ export class Product implements ProductInterface {
     return new Error('the price must be greater than zero to enable the product');
   }
   Disable(): boolean | Error {
-    throw new Error("Method not implemented.");
+    if (this.price === 0) { 
+      this.status = STATUS.DISABLED;
+      return true;
+    }
+    return new Error('the price must be zero in order to have the product disabled');
   }
   GetId(): string {
     return this.id;
