@@ -14,24 +14,23 @@ const STATUS = {
   DISABLED: 'disabled',
 }
 
-export class Product implements ProductInterface {
+export default class Product implements ProductInterface {
   id: string;
   name: string;
   price: number;
   status: string;
 
-  constructor(name: string, price: number, status: string) { 
+  constructor(name: string, price: number) { 
     this.id = randomUUID();
     this.name = name;
     this.price = price;
-    this.status = status;
+    this.status = STATUS.DISABLED;
   }
 
   IsValid(): boolean | Error {
     const idValidator = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
     if (this.status === "") {
       this.status = STATUS.DISABLED;
-      return new Error('the status must be enabled or disabled');
     }
     if (this.status !== STATUS.ENABLED && this.status !== STATUS.DISABLED) { 
       return new Error('the status must be enabled or disabled');
