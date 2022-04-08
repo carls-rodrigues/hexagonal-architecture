@@ -35,6 +35,9 @@ export default class Product implements ProductInterface {
     if (this.status !== STATUS.ENABLED && this.status !== STATUS.DISABLED) { 
       return new Error('the status must be enabled or disabled');
     }
+    if (isNaN(this.price)) {
+      return new Error('the price must be a number');
+     }
     if (this.price < 0) { 
       return new Error('the price must be greater than zero');
     }
